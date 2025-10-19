@@ -3,7 +3,7 @@ package main
 import rl "github.com/gen2brain/raylib-go/raylib"
 
 func main() {
-	rl.InitWindow(800, 450, "raylib [core] example - basic window")
+	rl.InitWindow(2000, 1200, "raylib [core] example - basic window")
 	defer rl.CloseWindow()
 
 	rl.SetTargetFPS(60)
@@ -11,6 +11,25 @@ func main() {
 	cubePos := rl.NewVector3(0.0, 0.0, 0.0)
 
 	for !rl.WindowShouldClose() {
+
+		isUp := false
+		_ = false
+		isLeft := false
+		_ = false
+		if rl.IsKeyDown(rl.KeyUp) {
+			isUp = true
+		}
+		if rl.IsKeyDown(rl.KeyLeft) {
+			isLeft = true
+		}
+		if rl.IsKeyDown(rl.KeyDown) && !isUp {
+			// isDown = true
+		}
+		if rl.IsKeyDown(rl.KeyRight) && !isLeft {
+			// isRight = true
+		}
+
+		// 12369874
 
 		if rl.IsKeyDown(rl.KeyUp) {
 			cubePos.Z -= 0.3
