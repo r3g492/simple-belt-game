@@ -20,10 +20,28 @@ func main() {
 	logEvery := 1000 * time.Millisecond
 	lastLog := now
 
+	rl.SetTraceLogLevel(rl.LogAll)
+
+	model := rl.LoadModel("resources/robot.glb")
+	defer rl.UnloadModel(model)
+	anim := rl.LoadModelAnimations("resources/robot.glb")
+	defer rl.UnloadModelAnimations(anim)
+
+	animIdx := 0
+	frame := int32(0)
+
 	for !rl.WindowShouldClose() {
 		now = time.Now()
 		dt := rl.GetFrameTime()
 		mouseLocation := rl.GetMousePosition()
+
+		if len(anim) > 0 && rl.IsModelAnimationValid(model, anim[animIdx]) {
+			rl.UpdateModelAnimation(model, anim[animIdx], frame)
+			frame++
+			if frame >= anim[animIdx].FrameCount {
+				frame = 0
+			}
+		}
 
 		// log
 		if time.Since(lastLog) >= logEvery {
@@ -78,8 +96,10 @@ func main() {
 
 		rl.PushMatrix()
 		rl.Translatef(cubePos.X, cubePos.Y, cubePos.Z)
-		rl.Rotatef(45, 0, 0, 1)
+		rl.Rotatef(270, 1, 0, 0)
+		rl.Rotatef(90, 0, 1, 0)
 		rl.DrawCubeWires(rl.Vector3{}, 2.0, 2.0, 2.0, rl.Red)
+		rl.DrawModel(model, rl.NewVector3(0, -1, 0), 0.7, rl.White)
 		rl.PopMatrix()
 
 		rl.EndMode3D()
