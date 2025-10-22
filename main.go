@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"simple-belt-game/movement"
 	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -29,7 +30,7 @@ func main() {
 
 	animIdx := 0
 	frame := int32(0)
-
+	prevDirection := movement.Left
 	for !rl.WindowShouldClose() {
 		now = time.Now()
 		dt := rl.GetFrameTime()
@@ -50,36 +51,16 @@ func main() {
 			lastLog = time.Now()
 		}
 
-		isUp := false
-		_ = false
-		isLeft := false
-		_ = false
-		if rl.IsKeyDown(rl.KeyW) {
-			isUp = true
-		}
-		if rl.IsKeyDown(rl.KeyA) {
-			isLeft = true
-		}
-		if rl.IsKeyDown(rl.KeyS) && !isUp {
-			// isDown = true
-		}
-		if rl.IsKeyDown(rl.KeyD) && !isLeft {
-			// isRight = true
-		}
-
-		// 12369874
-
-		if rl.IsKeyDown(rl.KeyW) {
-			cubePos.Z -= 0.3
-		}
-		if rl.IsKeyDown(rl.KeyA) {
-			cubePos.X -= 0.3
-		}
-		if rl.IsKeyDown(rl.KeyS) {
-			cubePos.Z += 0.3
-		}
-		if rl.IsKeyDown(rl.KeyD) {
-			cubePos.X += 0.3
+		var direction, move = movement.GetViewDirection(
+			rl.IsKeyDown(rl.KeyA),
+			rl.IsKeyDown(rl.KeyW),
+			rl.IsKeyDown(rl.KeyD),
+			rl.IsKeyDown(rl.KeyS),
+			prevDirection,
+		)
+		prevDirection = direction
+		if move {
+			cubePos = movement.GetNextLocation(direction, cubePos, 20, dt)
 		}
 
 		rl.BeginDrawing()
@@ -96,8 +77,11 @@ func main() {
 
 		rl.PushMatrix()
 		rl.Translatef(cubePos.X, cubePos.Y, cubePos.Z)
+		// default rotation
 		rl.Rotatef(270, 1, 0, 0)
-		rl.Rotatef(90, 0, 1, 0)
+		// more rotation by direction value
+		movement.RotateByDirection(direction)
+
 		rl.DrawCubeWires(rl.Vector3{}, 2.0, 2.0, 2.0, rl.Red)
 		rl.DrawModel(model, rl.NewVector3(0, -1, 0), 0.7, rl.White)
 		rl.PopMatrix()
