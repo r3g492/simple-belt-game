@@ -23,9 +23,11 @@ func main() {
 
 	rl.SetTraceLogLevel(rl.LogAll)
 
-	model := rl.LoadModel("resources/robot.glb")
+	bg := rl.LoadTexture("resources/background/cyberpunk_street_background.png")
+
+	model := rl.LoadModel("resources/player/robot.glb")
 	defer rl.UnloadModel(model)
-	anim := rl.LoadModelAnimations("resources/robot.glb")
+	anim := rl.LoadModelAnimations("resources/player/robot.glb")
 	defer rl.UnloadModelAnimations(anim)
 
 	animIdx := 0
@@ -52,10 +54,10 @@ func main() {
 		}
 
 		var direction, move = movement.GetViewDirection(
-			rl.IsKeyDown(rl.KeyA),
-			rl.IsKeyDown(rl.KeyW),
-			rl.IsKeyDown(rl.KeyD),
-			rl.IsKeyDown(rl.KeyS),
+			rl.IsKeyDown(rl.KeyLeft),
+			rl.IsKeyDown(rl.KeyUp),
+			rl.IsKeyDown(rl.KeyRight),
+			rl.IsKeyDown(rl.KeyDown),
 			prevDirection,
 		)
 		prevDirection = direction
@@ -65,6 +67,10 @@ func main() {
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
+
+		rl.DrawTextureEx(bg, rl.Vector2{X: 0, Y: 0}, 0.0, 4.0, rl.RayWhite)
+		// rl.DrawTextureEx(bg, (Vector2){ background.width*2 + scrollingBack, 20 }, 0.0f, 2.0f, WHITE);
+
 		camera3d := rl.Camera3D{
 			Position:   rl.NewVector3(0.0, 10.0, 0.0),
 			Target:     rl.NewVector3(0.0, 0.0, 0.0),
@@ -73,7 +79,8 @@ func main() {
 			Projection: rl.CameraOrthographic,
 		}
 		rl.BeginMode3D(camera3d)
-		rl.DrawGrid(1000, 1.0)
+
+		// rl.DrawGrid(1000, 1.0)
 
 		rl.PushMatrix()
 		rl.Translatef(cubePos.X, cubePos.Y, cubePos.Z)
