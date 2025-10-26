@@ -8,41 +8,41 @@ func Punch(
 
 }
 
-func FrontAttackCube(direction Direction) rl.Vector3 {
+func FrontAttackCube(direction Direction, attackLen float32) rl.Vector3 {
 	if direction == None {
 		return rl.Vector3{X: 0, Y: 0, Z: 0}
 	}
 
 	if direction == Left {
-		return rl.Vector3{X: -2, Y: 0, Z: 0}
+		return rl.Vector3{X: -attackLen, Y: 0, Z: 0}
 	}
 
 	if direction == LeftUp {
-		return rl.Vector3{X: -1, Y: 0, Z: -1}
+		return rl.Vector3{X: -attackLen / 2, Y: 0, Z: -attackLen / 2}
 	}
 
 	if direction == Up {
-		return rl.Vector3{X: 0, Y: 0, Z: -2}
+		return rl.Vector3{X: 0, Y: 0, Z: -attackLen}
 	}
 
 	if direction == UpRight {
-		return rl.Vector3{X: 1, Y: 0, Z: -1}
+		return rl.Vector3{X: attackLen / 2, Y: 0, Z: -attackLen / 2}
 	}
 
 	if direction == Right {
-		return rl.Vector3{X: 2, Y: 0, Z: 0}
+		return rl.Vector3{X: attackLen, Y: 0, Z: 0}
 	}
 
 	if direction == RightDown {
-		return rl.Vector3{X: 1, Y: 0, Z: 1}
+		return rl.Vector3{X: attackLen / 2, Y: 0, Z: attackLen / 2}
 	}
 
 	if direction == Down {
-		return rl.Vector3{X: 0, Y: 0, Z: 2}
+		return rl.Vector3{X: 0, Y: 0, Z: attackLen}
 	}
 
 	if direction == DownLeft {
-		return rl.Vector3{X: -1, Y: 0, Z: 1}
+		return rl.Vector3{X: -attackLen / 2, Y: 0, Z: attackLen / 2}
 	}
 
 	return rl.Vector3{X: 0, Y: 0, Z: 0}

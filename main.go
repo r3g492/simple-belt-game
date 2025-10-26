@@ -83,12 +83,14 @@ func main() {
 		rl.DrawCubeWires(rl.Vector3{X: 0, Y: 0, Z: 0}, 2.0, 2.0, 2.0, rl.Green)
 
 		if isPunch {
-			attackVector3 := movement.FrontAttackCube(direction)
-			rl.DrawCubeWires(attackVector3, 2.0, 2.0, 2.0, rl.Red)
+			// TODO: attack range
+			var attackLen float32 = 2.0
+			attackVector3 := movement.FrontAttackCube(direction, attackLen)
+			rl.DrawCubeWires(attackVector3, attackLen, attackLen, attackLen, rl.Red)
 		}
 
 		movement.RotateByDirection(direction)
-		rl.DrawModel(model, rl.NewVector3(0, -1, 0), 0.7, rl.White)
+		rl.DrawModel(model, rl.NewVector3(0, -1, 0), 0.45, rl.White)
 		rl.PopMatrix()
 
 		rl.EndMode3D()
