@@ -9,22 +9,17 @@ import (
 )
 
 func main() {
-	rl.InitWindow(2000, 1200, "raylib [core] example - basic window")
+	rl.InitWindow(2000, 1200, "hello game")
 	defer rl.CloseWindow()
 
-	rl.SetTargetFPS(60)
-
+	rl.SetTargetFPS(144)
 	cubePos := rl.NewVector3(0.0, 0.0, 0.0)
-
 	now := time.Now()
-
 	logEvery := 1000 * time.Millisecond
 	lastLog := now
 
 	rl.SetTraceLogLevel(rl.LogAll)
-
 	bg := rl.LoadTexture("resources/background/cyberpunk_street_background.png")
-
 	model := rl.LoadModel("resources/player/robot.glb")
 	defer rl.UnloadModel(model)
 	anim := rl.LoadModelAnimations("resources/player/robot.glb")
@@ -32,7 +27,7 @@ func main() {
 
 	animIdx := 0
 	frame := int32(0)
-	prevDirection := movement.Left
+	prevDirection := movement.Right
 	for !rl.WindowShouldClose() {
 		now = time.Now()
 		dt := rl.GetFrameTime()
