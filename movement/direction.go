@@ -66,6 +66,9 @@ func GetViewDirection(
 }
 
 func RotateByDirection(direction Direction) {
+	// default character rotation
+	rl.Rotatef(270, 1, 0, 0)
+
 	if direction == None {
 		return
 	}
