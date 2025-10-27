@@ -20,9 +20,9 @@ func main() {
 
 	rl.SetTraceLogLevel(rl.LogAll)
 	bg := rl.LoadTexture("resources/background/cyberpunk_street_background.png")
-	model := rl.LoadModel("resources/player/robot.glb")
+	model := rl.LoadModel("resources/player/square.glb")
 	defer rl.UnloadModel(model)
-	anim := rl.LoadModelAnimations("resources/player/robot.glb")
+	anim := rl.LoadModelAnimations("resources/player/square.glb")
 	defer rl.UnloadModelAnimations(anim)
 
 	animIdx := 0
