@@ -20,9 +20,9 @@ func main() {
 
 	rl.SetTraceLogLevel(rl.LogAll)
 	bg := rl.LoadTexture("resources/background/cyberpunk_street_background.png")
-	model := rl.LoadModel("resources/player/multi_cube.glb")
+	model := rl.LoadModel("resources/player/my_robot_v3.glb")
 	defer rl.UnloadModel(model)
-	anim := rl.LoadModelAnimations("resources/player/multi_cube.glb")
+	anim := rl.LoadModelAnimations("resources/player/my_robot_v3.glb")
 	defer rl.UnloadModelAnimations(anim)
 
 	animIdx := 0
@@ -63,7 +63,7 @@ func main() {
 		isPunch := rl.IsKeyDown(rl.KeyQ)
 
 		rl.BeginDrawing()
-		rl.ClearBackground(rl.RayWhite)
+		rl.ClearBackground(rl.Black)
 
 		rl.DrawTextureEx(bg, rl.Vector2{X: 0, Y: 0}, 0.0, 4.0, rl.RayWhite)
 
