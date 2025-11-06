@@ -28,6 +28,8 @@ func main() {
 	animIdx := 0
 	frame := int32(0)
 	prevDirection := movement.Right
+
+	dragStart := rl.Vector2{}
 	for !rl.WindowShouldClose() {
 		now = time.Now()
 		dt := rl.GetFrameTime()
@@ -55,12 +57,12 @@ func main() {
 			rl.IsKeyDown(rl.KeyDown),
 			prevDirection,
 		)
-		prevDirection = direction
 		if move {
 			cubePos = movement.GetNextLocation(direction, cubePos, 20, dt)
 		}
 		movement.Punch(rl.IsKeyDown(rl.KeyQ))
 		isPunch := rl.IsKeyDown(rl.KeyQ)
+		clicked := rl.IsMouseButtonDown(rl.MouseButtonLeft)
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.Black)
@@ -94,6 +96,23 @@ func main() {
 		rl.PopMatrix()
 
 		rl.EndMode3D()
+
+		if !clicked {
+			dragStart = mouseLocation
+		}
+
+		if clicked {
+			rl.DrawRectangleLines(
+				int32(dragStart.X),
+				int32(dragStart.Y),
+				int32(mouseLocation.X-dragStart.X),
+				int32(mouseLocation.Y-dragStart.Y),
+				rl.Green,
+			)
+		}
+
 		rl.EndDrawing()
+
+		prevDirection = direction
 	}
 }
