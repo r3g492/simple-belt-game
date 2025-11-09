@@ -68,10 +68,12 @@ func main() {
 		}
 		rl.BeginMode3D(camera3d)
 		for _, p := range side.PlayerSoldiers {
-			p.Draw()
+			p.Draw3D()
 		}
 		rl.EndMode3D()
-
+		for _, p := range side.PlayerSoldiers {
+			p.Draw2D(camera3d)
+		}
 		if !clicked {
 			dragStart = mouseLocation
 		}
