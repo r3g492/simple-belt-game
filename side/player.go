@@ -3,6 +3,7 @@ package side
 import (
 	"simple-belt-game/movement"
 	"simple-belt-game/unit"
+	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -31,8 +32,9 @@ func InitPlayerSoldiers(
 				Y: 0,
 				Z: 0,
 			},
-			Reached: false,
-			Type:    unit.Agent,
+			Reached:         false,
+			LastReachedTime: time.Now(),
+			Type:            unit.Agent,
 		},
 	)
 }

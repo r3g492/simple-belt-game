@@ -2,19 +2,21 @@ package unit
 
 import (
 	"simple-belt-game/movement"
+	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type Soldier struct {
-	Direction      movement.Direction
-	Position       rl.Vector3
-	Model          rl.Model
-	Selected       bool
-	Speed          float32
-	TargetPosition rl.Vector3
-	Reached        bool
-	Type           SoldierType
+	Direction       movement.Direction
+	Position        rl.Vector3
+	Model           rl.Model
+	Selected        bool
+	Speed           float32
+	TargetPosition  rl.Vector3
+	Reached         bool
+	LastReachedTime time.Time
+	Type            SoldierType
 }
 
 type SoldierType int
