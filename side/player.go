@@ -14,7 +14,8 @@ var (
 func InitPlayerSoldiers(
 	model rl.Model,
 ) {
-	PlayerSoldiers = append(PlayerSoldiers,
+	PlayerSoldiers = append(
+		PlayerSoldiers,
 		unit.Soldier{
 			Direction: movement.Down,
 			Position: rl.Vector3{
@@ -22,6 +23,16 @@ func InitPlayerSoldiers(
 				Y: 0,
 				Z: 0,
 			},
-			Model: model,
-		})
+			Model:    model,
+			Selected: false,
+			Speed:    0,
+			TargetPosition: rl.Vector3{
+				X: 0,
+				Y: 0,
+				Z: 0,
+			},
+			Reached: false,
+			Type:    unit.Agent,
+		},
+	)
 }

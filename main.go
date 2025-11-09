@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"simple-belt-game/movement"
 	"simple-belt-game/side"
 	"time"
 
@@ -16,7 +15,6 @@ func main() {
 	defer rl.CloseWindow()
 
 	rl.SetTargetFPS(144)
-	playerPos := rl.NewVector3(0.0, 0.0, 0.0)
 	now := time.Now()
 	logEvery := 1000 * time.Millisecond
 	lastLog := now
@@ -30,16 +28,12 @@ func main() {
 
 	animIdx := 0
 	frame := int32(0)
-	prevDirection := movement.Right
-
 	dragStart := rl.Vector2{}
-
 	side.InitPlayerSoldiers(model)
 	for !rl.WindowShouldClose() {
 		now = time.Now()
 		dt := rl.GetFrameTime()
 		mouseLocation := rl.GetMousePosition()
-
 		if len(anim) > 0 && rl.IsModelAnimationValid(model, anim[animIdx]) {
 			rl.UpdateModelAnimation(model, anim[animIdx], frame)
 			frame++
@@ -47,7 +41,6 @@ func main() {
 				frame = 0
 			}
 		}
-
 		// log
 		if time.Since(lastLog) >= logEvery {
 			fmt.Println("mouseLocation:", mouseLocation)
@@ -55,18 +48,11 @@ func main() {
 			lastLog = time.Now()
 		}
 
-		var direction, move = movement.GetViewDirection(
-			rl.IsKeyDown(rl.KeyLeft),
-			rl.IsKeyDown(rl.KeyUp),
-			rl.IsKeyDown(rl.KeyRight),
-			rl.IsKeyDown(rl.KeyDown),
-			prevDirection,
-		)
-		if move {
-			playerPos = movement.GetNextLocation(direction, playerPos, 20, dt)
-		}
-		movement.Punch(rl.IsKeyDown(rl.KeyQ))
 		clicked := rl.IsMouseButtonDown(rl.MouseButtonLeft)
+
+		for _, p := range side.PlayerSoldiers {
+			p.Move(dt)
+		}
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.Black)
@@ -81,24 +67,14 @@ func main() {
 			Projection: rl.CameraOrthographic,
 		}
 		rl.BeginMode3D(camera3d)
-		rl.PushMatrix()
-		rl.Translatef(playerPos.X, playerPos.Y, playerPos.Z)
-		// player cube
-		rl.DrawCubeWires(rl.Vector3{X: 0, Y: 0, Z: 0}, 2.0, 2.0, 2.0, rl.Green)
-		movement.RotateByDirection(direction)
-		rl.DrawModel(model, rl.NewVector3(0, -1, 0), 0.45, rl.White)
-		rl.PopMatrix()
-
 		for _, p := range side.PlayerSoldiers {
-			p.DrawSoldier()
+			p.Draw()
 		}
-
 		rl.EndMode3D()
 
 		if !clicked {
 			dragStart = mouseLocation
 		}
-
 		if clicked {
 			rl.DrawRectangleLines(
 				int32(dragStart.X),
@@ -108,9 +84,6 @@ func main() {
 				rl.Green,
 			)
 		}
-
 		rl.EndDrawing()
-
-		prevDirection = direction
 	}
 }
