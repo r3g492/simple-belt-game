@@ -38,13 +38,21 @@ func (s *Soldier) Draw3D() {
 }
 
 func (s *Soldier) Draw2D(cam rl.Camera3D) {
-	r := ScreenRectAt(s.Position, cam, 80, 80)
-	rl.DrawRectangleLinesEx(r, 2, rl.Yellow)
+	if s.Selected {
+		var w float32 = 80
+		var h float32 = 80
+		p := rl.GetWorldToScreen(s.Position, cam)
+		r := rl.Rectangle{X: p.X - w/2, Y: p.Y - h/2, Width: w, Height: h}
+		rl.DrawRectangleLinesEx(r, 2, rl.Green)
+	}
 }
 
-func ScreenRectAt(pos rl.Vector3, cam rl.Camera3D, w, h float32) rl.Rectangle {
-	p := rl.GetWorldToScreen(pos, cam)
-	return rl.Rectangle{X: p.X - w/2, Y: p.Y - h/2, Width: w, Height: h}
+func (s *Soldier) Get2DControlRec(cam rl.Camera3D) rl.Rectangle {
+	var w float32 = 80
+	var h float32 = 80
+	p := rl.GetWorldToScreen(s.Position, cam)
+	r := rl.Rectangle{X: p.X - w/2, Y: p.Y - h/2, Width: w, Height: h}
+	return r
 }
 
 func (s *Soldier) Move(
