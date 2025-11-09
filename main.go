@@ -3,24 +3,27 @@ package main
 import (
 	"fmt"
 	"simple-belt-game/movement"
+	"simple-belt-game/side"
 	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
+
+var model rl.Model
 
 func main() {
 	rl.InitWindow(2000, 1200, "hello game")
 	defer rl.CloseWindow()
 
 	rl.SetTargetFPS(144)
-	cubePos := rl.NewVector3(0.0, 0.0, 0.0)
+	playerPos := rl.NewVector3(0.0, 0.0, 0.0)
 	now := time.Now()
 	logEvery := 1000 * time.Millisecond
 	lastLog := now
 
 	rl.SetTraceLogLevel(rl.LogAll)
 	bg := rl.LoadTexture("resources/background/cyberpunk_street_background.png")
-	model := rl.LoadModel("resources/player/robot.glb")
+	model = rl.LoadModel("resources/player/robot.glb")
 	defer rl.UnloadModel(model)
 	anim := rl.LoadModelAnimations("resources/player/robot.glb")
 	defer rl.UnloadModelAnimations(anim)
@@ -30,6 +33,8 @@ func main() {
 	prevDirection := movement.Right
 
 	dragStart := rl.Vector2{}
+
+	side.InitPlayerSoldiers(model)
 	for !rl.WindowShouldClose() {
 		now = time.Now()
 		dt := rl.GetFrameTime()
@@ -58,10 +63,9 @@ func main() {
 			prevDirection,
 		)
 		if move {
-			cubePos = movement.GetNextLocation(direction, cubePos, 20, dt)
+			playerPos = movement.GetNextLocation(direction, playerPos, 20, dt)
 		}
 		movement.Punch(rl.IsKeyDown(rl.KeyQ))
-		isPunch := rl.IsKeyDown(rl.KeyQ)
 		clicked := rl.IsMouseButtonDown(rl.MouseButtonLeft)
 
 		rl.BeginDrawing()
@@ -77,23 +81,17 @@ func main() {
 			Projection: rl.CameraOrthographic,
 		}
 		rl.BeginMode3D(camera3d)
-
-		// rl.DrawGrid(1000, 1.0)
 		rl.PushMatrix()
-		rl.Translatef(cubePos.X, cubePos.Y, cubePos.Z)
+		rl.Translatef(playerPos.X, playerPos.Y, playerPos.Z)
 		// player cube
 		rl.DrawCubeWires(rl.Vector3{X: 0, Y: 0, Z: 0}, 2.0, 2.0, 2.0, rl.Green)
-
-		if isPunch {
-			// TODO: attack range
-			var attackLen float32 = 2.0
-			attackVector3 := movement.FrontAttackCube(direction, attackLen)
-			rl.DrawCubeWires(attackVector3, attackLen, attackLen, attackLen, rl.Red)
-		}
-
 		movement.RotateByDirection(direction)
 		rl.DrawModel(model, rl.NewVector3(0, -1, 0), 0.45, rl.White)
 		rl.PopMatrix()
+
+		for _, p := range side.PlayerSoldiers {
+			p.DrawSoldier()
+		}
 
 		rl.EndMode3D()
 
