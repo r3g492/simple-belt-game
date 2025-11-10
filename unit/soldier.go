@@ -9,6 +9,7 @@ import (
 
 type Soldier struct {
 	Direction       movement.Direction
+	PrevPosition    rl.Vector3
 	Position        rl.Vector3
 	Model           rl.Model
 	Selected        bool
@@ -17,6 +18,7 @@ type Soldier struct {
 	Reached         bool
 	LastReachedTime time.Time
 	Type            SoldierType
+	Status          SoldierStatus
 }
 
 type SoldierType int
@@ -24,6 +26,14 @@ type SoldierType int
 const (
 	Agent SoldierType = iota
 	Shield
+)
+
+type SoldierStatus int
+
+const (
+	Idle SoldierStatus = iota
+	Move
+	Attack
 )
 
 func (s *Soldier) Draw3D() {
@@ -55,43 +65,45 @@ func (s *Soldier) Get2DControlRec(cam rl.Camera3D) rl.Rectangle {
 	return r
 }
 
-func (s *Soldier) Move(
+func (s *Soldier) Act(
 	dt float32,
-) rl.Vector3 {
+) *Soldier {
+	if s.Status == Move {
+		s.Position = s.TargetPosition
+		s.Status = Idle
+		var _ = s.Speed * dt
 
-	speedDelta := s.Speed * dt
+		if s.Direction == movement.Left {
+			// return rl.Vector3{X: s.Position.X - speedDelta, Y: s.Position.Y, Z: s.Position.Z}
+		}
 
-	if s.Direction == movement.Left {
-		return rl.Vector3{X: s.Position.X - speedDelta, Y: s.Position.Y, Z: s.Position.Z}
+		if s.Direction == movement.LeftUp {
+			// return rl.Vector3{X: s.Position.X - speedDelta/2, Y: s.Position.Y, Z: s.Position.Z - speedDelta/2}
+		}
+
+		if s.Direction == movement.Up {
+			// return rl.Vector3{X: s.Position.X, Y: s.Position.Y, Z: s.Position.Z - speedDelta}
+		}
+
+		if s.Direction == movement.UpRight {
+			// return rl.Vector3{X: s.Position.X + speedDelta/2, Y: s.Position.Y, Z: s.Position.Z - speedDelta/2}
+		}
+
+		if s.Direction == movement.Right {
+			// return rl.Vector3{X: s.Position.X + speedDelta, Y: s.Position.Y, Z: s.Position.Z}
+		}
+
+		if s.Direction == movement.RightDown {
+			// return rl.Vector3{X: s.Position.X + speedDelta/2, Y: s.Position.Y, Z: s.Position.Z + speedDelta/2}
+		}
+
+		if s.Direction == movement.Down {
+			// return rl.Vector3{X: s.Position.X, Y: s.Position.Y, Z: s.Position.Z + speedDelta}
+		}
+
+		if s.Direction == movement.DownLeft {
+			// return rl.Vector3{X: s.Position.X - speedDelta/2, Y: s.Position.Y, Z: s.Position.Z + speedDelta/2}
+		}
 	}
-
-	if s.Direction == movement.LeftUp {
-		return rl.Vector3{X: s.Position.X - speedDelta/2, Y: s.Position.Y, Z: s.Position.Z - speedDelta/2}
-	}
-
-	if s.Direction == movement.Up {
-		return rl.Vector3{X: s.Position.X, Y: s.Position.Y, Z: s.Position.Z - speedDelta}
-	}
-
-	if s.Direction == movement.UpRight {
-		return rl.Vector3{X: s.Position.X + speedDelta/2, Y: s.Position.Y, Z: s.Position.Z - speedDelta/2}
-	}
-
-	if s.Direction == movement.Right {
-		return rl.Vector3{X: s.Position.X + speedDelta, Y: s.Position.Y, Z: s.Position.Z}
-	}
-
-	if s.Direction == movement.RightDown {
-		return rl.Vector3{X: s.Position.X + speedDelta/2, Y: s.Position.Y, Z: s.Position.Z + speedDelta/2}
-	}
-
-	if s.Direction == movement.Down {
-		return rl.Vector3{X: s.Position.X, Y: s.Position.Y, Z: s.Position.Z + speedDelta}
-	}
-
-	if s.Direction == movement.DownLeft {
-		return rl.Vector3{X: s.Position.X - speedDelta/2, Y: s.Position.Y, Z: s.Position.Z + speedDelta/2}
-	}
-
-	return rl.Vector3{X: s.Position.X, Y: s.Position.Y, Z: s.Position.Z}
+	return s
 }

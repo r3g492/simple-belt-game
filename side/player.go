@@ -24,6 +24,11 @@ func InitPlayerSoldiers(
 				Y: 0,
 				Z: 0,
 			},
+			PrevPosition: rl.Vector3{
+				X: 0,
+				Y: 0,
+				Z: 0,
+			},
 			Model:    model,
 			Selected: false,
 			Speed:    0,
@@ -35,6 +40,7 @@ func InitPlayerSoldiers(
 			Reached:         false,
 			LastReachedTime: time.Now(),
 			Type:            unit.Agent,
+			Status:          unit.Idle,
 		},
 	)
 }

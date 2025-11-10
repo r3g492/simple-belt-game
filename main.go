@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"simple-belt-game/side"
+	"simple-belt-game/unit"
 	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -53,8 +54,13 @@ func main() {
 			lastLog = time.Now()
 		}
 
-		for _, p := range side.PlayerSoldiers {
-			p.Move(dt)
+		var clickBegin = rl.IsMouseButtonPressed(rl.MouseButtonLeft)
+		var clickHold = dragging && rl.IsMouseButtonDown(rl.MouseButtonLeft)
+		var clickRelease = dragging && rl.IsMouseButtonReleased(rl.MouseButtonLeft)
+		var actionClick = !dragging && rl.IsMouseButtonPressed(rl.MouseButtonRight)
+
+		for i := range side.PlayerSoldiers {
+			side.PlayerSoldiers[i] = *side.PlayerSoldiers[i].Act(dt)
 		}
 
 		rl.BeginDrawing()
@@ -71,49 +77,50 @@ func main() {
 		for _, p := range side.PlayerSoldiers {
 			p.Draw3D()
 		}
+		rl.DrawGrid(1000, 1.0)
+
+		if actionClick {
+			var ray = rl.GetScreenToWorldRay(mouseLocation, camera3d)
+			target3D := rl.Vector3{
+				X: ray.Position.X,
+				Y: 0,
+				Z: ray.Position.Z,
+			}
+			rl.DrawSphere(target3D, 0.1, rl.Red)
+
+			for i := range side.PlayerSoldiers {
+				if side.PlayerSoldiers[i].Selected == true {
+					side.PlayerSoldiers[i].Status = unit.Move
+					side.PlayerSoldiers[i].TargetPosition = target3D
+					fmt.Println(side.PlayerSoldiers[i].Status)
+					fmt.Println(side.PlayerSoldiers[i].TargetPosition)
+				}
+			}
+		}
 		rl.EndMode3D()
 
-		/*clicked := rl.IsMouseButtonDown(rl.MouseButtonLeft)
-		if !clicked {
-			dragStart = mouseLocation
-		}
-		if clicked {
-			rl.DrawRectangleLines(
-				int32(dragStart.X),
-				int32(dragStart.Y),
-				int32(mouseLocation.X-dragStart.X),
-				int32(mouseLocation.Y-dragStart.Y),
-				rl.Green,
-			)
-		}*/
-
-		// mouse down edge -> begin drag
-		if rl.IsMouseButtonPressed(rl.MouseButtonLeft) {
+		if clickBegin {
 			dragging = true
 			dragStart = rl.GetMousePosition()
 		}
 
-		// while held -> draw preview
-		if dragging && rl.IsMouseButtonDown(rl.MouseButtonLeft) {
+		if clickHold {
 			cur := rl.GetMousePosition()
 			r := rectFromPoints(dragStart, cur)
 			rl.DrawRectangleLines(int32(r.X), int32(r.Y), int32(r.Width), int32(r.Height), rl.Green)
 		}
 
-		// mouse up edge -> finalize
-		if dragging && rl.IsMouseButtonReleased(rl.MouseButtonLeft) {
+		if clickRelease {
 			dragging = false
-			cur := rl.GetMousePosition() // capture "cur" only when released
+			cur := rl.GetMousePosition()
 			selectionRect = rectFromPoints(dragStart, cur)
 
-			// clear previous selection (or skip if you want additive with Shift)
 			for i := range side.PlayerSoldiers {
 				side.PlayerSoldiers[i].Selected = false
 			}
 
-			// select on intersection
 			for i := range side.PlayerSoldiers {
-				r := side.PlayerSoldiers[i].Get2DControlRec(camera3d) // rl.Rectangle
+				r := side.PlayerSoldiers[i].Get2DControlRec(camera3d)
 				if rl.CheckCollisionRecs(selectionRect, r) {
 					side.PlayerSoldiers[i].Selected = true
 				}
