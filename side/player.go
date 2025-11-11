@@ -31,7 +31,7 @@ func InitPlayerSoldiers(
 			},
 			Model:    model,
 			Selected: false,
-			Speed:    0,
+			Speed:    5,
 			TargetPosition: rl.Vector3{
 				X: 0,
 				Y: 0,

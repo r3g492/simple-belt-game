@@ -1,6 +1,7 @@
 package unit
 
 import (
+	"math"
 	"simple-belt-game/movement"
 	"time"
 
@@ -69,40 +70,49 @@ func (s *Soldier) Act(
 	dt float32,
 ) {
 	if s.Status == Move {
-		s.Position = s.TargetPosition
-		s.Status = Idle
-		var _ = s.Speed * dt
+		var moveDirection = rl.Vector3Subtract(s.TargetPosition, s.Position)
+		var distance = rl.Vector3Length(moveDirection)
 
-		if s.Direction == movement.Left {
-			// return rl.Vector3{X: s.Position.X - speedDelta, Y: s.Position.Y, Z: s.Position.Z}
+		var speedDelta = s.Speed * dt
+
+		if distance <= speedDelta || distance < 0.01 {
+			s.Position = s.TargetPosition
+			s.Status = Idle
+			return
 		}
 
-		if s.Direction == movement.LeftUp {
-			// return rl.Vector3{X: s.Position.X - speedDelta/2, Y: s.Position.Y, Z: s.Position.Z - speedDelta/2}
-		}
+		var unitDirection = rl.Vector3Normalize(moveDirection)
 
-		if s.Direction == movement.Up {
-			// return rl.Vector3{X: s.Position.X, Y: s.Position.Y, Z: s.Position.Z - speedDelta}
-		}
+		var moveAmount = rl.Vector3Scale(unitDirection, speedDelta)
+		s.Position = rl.Vector3Add(s.Position, moveAmount)
 
-		if s.Direction == movement.UpRight {
-			// return rl.Vector3{X: s.Position.X + speedDelta/2, Y: s.Position.Y, Z: s.Position.Z - speedDelta/2}
-		}
+		var angle = math.Atan2(float64(unitDirection.Z), float64(unitDirection.X))
 
-		if s.Direction == movement.Right {
-			// return rl.Vector3{X: s.Position.X + speedDelta, Y: s.Position.Y, Z: s.Position.Z}
-		}
+		var angleDegrees = angle * (180 / math.Pi)
 
-		if s.Direction == movement.RightDown {
-			// return rl.Vector3{X: s.Position.X + speedDelta/2, Y: s.Position.Y, Z: s.Position.Z + speedDelta/2}
-		}
-
-		if s.Direction == movement.Down {
-			// return rl.Vector3{X: s.Position.X, Y: s.Position.Y, Z: s.Position.Z + speedDelta}
-		}
-
-		if s.Direction == movement.DownLeft {
-			// return rl.Vector3{X: s.Position.X - speedDelta/2, Y: s.Position.Y, Z: s.Position.Z + speedDelta/2}
+		if angleDegrees > -22.5 && angleDegrees <= 22.5 {
+			s.Direction = movement.Right
+		} else if angleDegrees > 22.5 && angleDegrees <= 67.5 {
+			// Assuming RightDown is +X, +Z
+			s.Direction = movement.RightDown
+		} else if angleDegrees > 67.5 && angleDegrees <= 112.5 {
+			// Assuming Down is +Z
+			s.Direction = movement.Down
+		} else if angleDegrees > 112.5 && angleDegrees <= 157.5 {
+			// Assuming DownLeft is -X, +Z
+			s.Direction = movement.DownLeft
+		} else if angleDegrees > 157.5 || angleDegrees <= -157.5 {
+			// Wraps around -180/180
+			s.Direction = movement.Left
+		} else if angleDegrees > -157.5 && angleDegrees <= -112.5 {
+			// Assuming LeftUp is -X, -Z
+			s.Direction = movement.LeftUp
+		} else if angleDegrees > -112.5 && angleDegrees <= -67.5 {
+			// Assuming Up is -Z
+			s.Direction = movement.Up
+		} else if angleDegrees > -67.5 && angleDegrees <= -22.5 {
+			// Assuming UpRight is +X, -Z
+			s.Direction = movement.UpRight
 		}
 	}
 }

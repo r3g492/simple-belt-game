@@ -77,7 +77,7 @@ func main() {
 		for _, p := range side.PlayerSoldiers {
 			p.Draw3D()
 		}
-		rl.DrawGrid(1000, 1.0)
+		// rl.DrawGrid(1000, 1.0)
 
 		if actionClick {
 			var ray = rl.GetScreenToWorldRay(mouseLocation, camera3d)
