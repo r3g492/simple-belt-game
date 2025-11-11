@@ -60,7 +60,7 @@ func main() {
 		var actionClick = !dragging && rl.IsMouseButtonPressed(rl.MouseButtonRight)
 
 		for i := range side.PlayerSoldiers {
-			side.PlayerSoldiers[i] = *side.PlayerSoldiers[i].Act(dt)
+			side.PlayerSoldiers[i].Act(dt)
 		}
 
 		rl.BeginDrawing()

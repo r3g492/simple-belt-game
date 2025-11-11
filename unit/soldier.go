@@ -67,7 +67,7 @@ func (s *Soldier) Get2DControlRec(cam rl.Camera3D) rl.Rectangle {
 
 func (s *Soldier) Act(
 	dt float32,
-) *Soldier {
+) {
 	if s.Status == Move {
 		s.Position = s.TargetPosition
 		s.Status = Idle
@@ -105,5 +105,4 @@ func (s *Soldier) Act(
 			// return rl.Vector3{X: s.Position.X - speedDelta/2, Y: s.Position.Y, Z: s.Position.Z + speedDelta/2}
 		}
 	}
-	return s
 }
