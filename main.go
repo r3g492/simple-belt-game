@@ -32,6 +32,7 @@ func main() {
 	defer rl.UnloadModel(model)
 	anim := rl.LoadModelAnimations("resources/player/robot.glb")
 	defer rl.UnloadModelAnimations(anim)
+	rl.DisableCursor()
 
 	animIdx := 0
 	frame := int32(0)
@@ -101,18 +102,18 @@ func main() {
 
 		if clickBegin {
 			dragging = true
-			dragStart = rl.GetMousePosition()
+			dragStart = mouseLocation
 		}
 
 		if clickHold {
-			cur := rl.GetMousePosition()
+			cur := mouseLocation
 			r := rectFromPoints(dragStart, cur)
 			rl.DrawRectangleLines(int32(r.X), int32(r.Y), int32(r.Width), int32(r.Height), rl.Green)
 		}
 
 		if clickRelease {
 			dragging = false
-			cur := rl.GetMousePosition()
+			cur := mouseLocation
 			selectionRect = rectFromPoints(dragStart, cur)
 
 			for i := range side.PlayerSoldiers {
@@ -130,6 +131,15 @@ func main() {
 		for _, p := range side.PlayerSoldiers {
 			p.Draw2D(camera3d)
 		}
+
+		// draw cursor
+		rl.DrawRectangle(
+			int32(mouseLocation.X),
+			int32(mouseLocation.Y),
+			10,
+			10,
+			rl.Blue,
+		)
 
 		rl.EndDrawing()
 	}
