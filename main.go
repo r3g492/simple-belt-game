@@ -61,7 +61,7 @@ func main() {
 		var clickBegin = rl.IsMouseButtonPressed(rl.MouseButtonLeft)
 		var clickHold = dragging && rl.IsMouseButtonDown(rl.MouseButtonLeft)
 		var clickRelease = dragging && rl.IsMouseButtonReleased(rl.MouseButtonLeft)
-		var moveClick = !dragging && rl.IsMouseButtonPressed(rl.MouseButtonRight)
+		var moveClick = !dragging && rl.IsMouseButtonDown(rl.MouseButtonRight)
 		var attackClick = rl.IsKeyPressed(rl.KeyA)
 		if attackClick {
 			attackMode = !attackMode

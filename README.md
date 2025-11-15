@@ -2,6 +2,6 @@ belt rts
 do guns because animation is hard 
 
 TODO:
-movement by mouse click
+collision
 auto attack 
 enemy spawn
