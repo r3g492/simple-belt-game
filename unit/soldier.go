@@ -69,7 +69,7 @@ func (s *Soldier) Get2DControlRec(cam rl.Camera3D) rl.Rectangle {
 func (s *Soldier) Act(
 	dt float32,
 ) {
-	if s.Status == Move {
+	if s.Status == Move || s.Status == Attack {
 		var moveDirection = rl.Vector3Subtract(s.TargetPosition, s.Position)
 		var distance = rl.Vector3Length(moveDirection)
 

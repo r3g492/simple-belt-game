@@ -37,6 +37,9 @@ func main() {
 	animIdx := 0
 	frame := int32(0)
 	side.InitPlayerSoldiers(model)
+
+	var attackMode = false
+
 	for !rl.WindowShouldClose() {
 		now = time.Now()
 		dt := rl.GetFrameTime()
@@ -58,7 +61,11 @@ func main() {
 		var clickBegin = rl.IsMouseButtonPressed(rl.MouseButtonLeft)
 		var clickHold = dragging && rl.IsMouseButtonDown(rl.MouseButtonLeft)
 		var clickRelease = dragging && rl.IsMouseButtonReleased(rl.MouseButtonLeft)
-		var actionClick = !dragging && rl.IsMouseButtonPressed(rl.MouseButtonRight)
+		var moveClick = !dragging && rl.IsMouseButtonPressed(rl.MouseButtonRight)
+		var attackClick = rl.IsKeyPressed(rl.KeyA)
+		if attackClick {
+			attackMode = !attackMode
+		}
 
 		for i := range side.PlayerSoldiers {
 			side.PlayerSoldiers[i].Act(dt)
@@ -78,9 +85,8 @@ func main() {
 		for _, p := range side.PlayerSoldiers {
 			p.Draw3D()
 		}
-		// rl.DrawGrid(1000, 1.0)
 
-		if actionClick {
+		if moveClick {
 			var ray = rl.GetScreenToWorldRay(mouseLocation, camera3d)
 			target3D := rl.Vector3{
 				X: ray.Position.X,
@@ -93,16 +99,31 @@ func main() {
 				if side.PlayerSoldiers[i].Selected == true {
 					side.PlayerSoldiers[i].Status = unit.Move
 					side.PlayerSoldiers[i].TargetPosition = target3D
-					fmt.Println(side.PlayerSoldiers[i].Status)
-					fmt.Println(side.PlayerSoldiers[i].TargetPosition)
 				}
 			}
 		}
 		rl.EndMode3D()
 
 		if clickBegin {
-			dragging = true
-			dragStart = mouseLocation
+			if !attackMode {
+				dragging = true
+				dragStart = mouseLocation
+			}
+			attackMode = false
+
+			var ray = rl.GetScreenToWorldRay(mouseLocation, camera3d)
+			target3D := rl.Vector3{
+				X: ray.Position.X,
+				Y: 0,
+				Z: ray.Position.Z,
+			}
+
+			for i := range side.PlayerSoldiers {
+				if side.PlayerSoldiers[i].Selected == true {
+					side.PlayerSoldiers[i].Status = unit.Attack
+					side.PlayerSoldiers[i].TargetPosition = target3D
+				}
+			}
 		}
 
 		if clickHold {
@@ -133,12 +154,16 @@ func main() {
 		}
 
 		// draw cursor
+		var cursorColor = rl.Blue
+		if attackMode {
+			cursorColor = rl.Red
+		}
 		rl.DrawRectangle(
 			int32(mouseLocation.X),
 			int32(mouseLocation.Y),
 			10,
 			10,
-			rl.Blue,
+			cursorColor,
 		)
 
 		rl.EndDrawing()
