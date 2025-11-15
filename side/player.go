@@ -41,6 +41,7 @@ func InitPlayerSoldiers(
 			LastReachedTime: time.Now(),
 			Type:            unit.Agent,
 			Status:          unit.Idle,
+			Size:            0.8,
 		},
 		unit.Soldier{
 			Direction: movement.Down,
@@ -66,6 +67,7 @@ func InitPlayerSoldiers(
 			LastReachedTime: time.Now(),
 			Type:            unit.Agent,
 			Status:          unit.Idle,
+			Size:            0.8,
 		},
 	)
 }

@@ -68,7 +68,8 @@ func main() {
 		}
 
 		for i := range side.PlayerSoldiers {
-			side.PlayerSoldiers[i].Act(dt)
+			// Pass the full list and the current soldier's index
+			side.PlayerSoldiers[i].Act(dt, side.PlayerSoldiers, i)
 		}
 
 		rl.BeginDrawing()
@@ -93,8 +94,6 @@ func main() {
 				Y: 0,
 				Z: ray.Position.Z,
 			}
-			rl.DrawSphere(target3D, 0.1, rl.Red)
-
 			for i := range side.PlayerSoldiers {
 				if side.PlayerSoldiers[i].Selected == true {
 					side.PlayerSoldiers[i].Status = unit.Move
@@ -104,26 +103,25 @@ func main() {
 		}
 		rl.EndMode3D()
 
-		if clickBegin {
-			if !attackMode {
-				dragging = true
-				dragStart = mouseLocation
-			}
-			attackMode = false
-
+		if clickBegin && attackMode {
 			var ray = rl.GetScreenToWorldRay(mouseLocation, camera3d)
 			target3D := rl.Vector3{
 				X: ray.Position.X,
 				Y: 0,
 				Z: ray.Position.Z,
 			}
-
 			for i := range side.PlayerSoldiers {
 				if side.PlayerSoldiers[i].Selected == true {
 					side.PlayerSoldiers[i].Status = unit.Attack
 					side.PlayerSoldiers[i].TargetPosition = target3D
 				}
 			}
+		}
+
+		if clickBegin {
+			dragging = true
+			dragStart = mouseLocation
+			attackMode = false
 		}
 
 		if clickHold {

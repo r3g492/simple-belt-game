@@ -20,6 +20,7 @@ type Soldier struct {
 	LastReachedTime time.Time
 	Type            SoldierType
 	Status          SoldierStatus
+	Size            float32
 }
 
 type SoldierType int
@@ -68,6 +69,8 @@ func (s *Soldier) Get2DControlRec(cam rl.Camera3D) rl.Rectangle {
 
 func (s *Soldier) Act(
 	dt float32,
+	soldierList []Soldier,
+	selfIdx int,
 ) {
 	if s.Status == Move || s.Status == Attack {
 		var moveDirection = rl.Vector3Subtract(s.TargetPosition, s.Position)
@@ -84,35 +87,49 @@ func (s *Soldier) Act(
 		var unitDirection = rl.Vector3Normalize(moveDirection)
 
 		var moveAmount = rl.Vector3Scale(unitDirection, speedDelta)
-		s.Position = rl.Vector3Add(s.Position, moveAmount)
+		var nextPosition = rl.Vector3Add(s.Position, moveAmount)
 
 		var angle = math.Atan2(float64(unitDirection.Z), float64(unitDirection.X))
-
 		var angleDegrees = angle * (180 / math.Pi)
-
 		if angleDegrees > -22.5 && angleDegrees <= 22.5 {
 			s.Direction = movement.Right
 		} else if angleDegrees > 22.5 && angleDegrees <= 67.5 {
-			// Assuming RightDown is +X, +Z
 			s.Direction = movement.RightDown
 		} else if angleDegrees > 67.5 && angleDegrees <= 112.5 {
-			// Assuming Down is +Z
 			s.Direction = movement.Down
 		} else if angleDegrees > 112.5 && angleDegrees <= 157.5 {
-			// Assuming DownLeft is -X, +Z
 			s.Direction = movement.DownLeft
 		} else if angleDegrees > 157.5 || angleDegrees <= -157.5 {
-			// Wraps around -180/180
 			s.Direction = movement.Left
 		} else if angleDegrees > -157.5 && angleDegrees <= -112.5 {
-			// Assuming LeftUp is -X, -Z
 			s.Direction = movement.LeftUp
 		} else if angleDegrees > -112.5 && angleDegrees <= -67.5 {
-			// Assuming Up is -Z
 			s.Direction = movement.Up
 		} else if angleDegrees > -67.5 && angleDegrees <= -22.5 {
-			// Assuming UpRight is +X, -Z
 			s.Direction = movement.UpRight
 		}
+
+		for i, other := range soldierList {
+			if i == selfIdx {
+				continue
+			}
+
+			minDistance := s.Size + other.Size
+
+			distanceToOther := rl.Vector3Distance(nextPosition, other.Position)
+
+			if distanceToOther < minDistance && distanceToOther > 0.001 {
+				overlap := minDistance - distanceToOther
+				var pushDirection = rl.Vector3Subtract(nextPosition, other.Position)
+				pushDirection = rl.Vector3Normalize(pushDirection)
+				var correction = rl.Vector3Scale(pushDirection, overlap)
+				nextPosition = rl.Vector3Add(nextPosition, correction)
+			} else if distanceToOther <= 0.001 {
+				arbitraryPush := rl.NewVector3(minDistance, 0, 0)
+				nextPosition = rl.Vector3Add(nextPosition, arbitraryPush)
+			}
+		}
+
+		s.Position = nextPosition
 	}
 }
